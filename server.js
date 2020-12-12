@@ -40,7 +40,7 @@ myDB(async client => {
 
   passport.deserializeUser((id, done) => {
     myDB.findOne({ _id: new ObjectID(id) }, (err, doc) => {
-      done(null, null);
+      done(null, doc);
     });
   });
   // Be sure to add this...
@@ -60,9 +60,11 @@ app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+/*
 app.route('/').get((req, res) => {
   res.render(process.cwd() + '/views/pug/index', {
     title: 'Hello',
     message: 'Please login'
   });
 });
+*/
