@@ -8,6 +8,7 @@ const fccTesting = require('./freeCodeCamp/fcctesting.js');
 const app = express();
 const session = require('express-session');
 const passport = require('passport');
+const LocalStrategy = require('passport-local');
 
 app.set('view engine', 'pug')
 
@@ -24,6 +25,8 @@ app.use(passport.session());
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
   console.log("Conected to DB")
+
+  
   // Be sure to change the title
   app.route('/').get((req, res) => {
     //Change the response to render the Pug template
@@ -43,6 +46,18 @@ myDB(async client => {
       done(null, doc);
     });
   });
+
+  passport.use(new LocalStrategy(
+  function(username, password, done) {
+    myDataBase.findOne({ username: username }, function (err, user) {
+      console.log('User '+ username +' attempted to log in.');
+      if (err) { return done(err); }
+      if (!user) { return done(null, false); }
+      if (password !== user.password) { return done(null, false); }
+      return done(null, user);
+    });
+  }
+));
   // Be sure to add this...
 }).catch(e => {
   console.log("FAILED to conect to DB")
