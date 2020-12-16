@@ -32,7 +32,8 @@ myDB(async client => {
     //Change the response to render the Pug template
     res.render('pug', {
       title: 'Connected to Database',
-      message: 'Please login'
+      message: 'Please login', 
+      showLogin: true
     });
   });
 
@@ -45,6 +46,11 @@ myDB(async client => {
     myDB.findOne({ _id: new ObjectID(id) }, (err, doc) => {
       done(null, doc);
     });
+  });
+
+  app.route("/login").post(passport.authenticate('local', { failureRedirect: '/' }),
+  (req, res) => {
+    res.render('/profile');
   });
 
   passport.use(new LocalStrategy(
