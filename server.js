@@ -62,7 +62,7 @@ myDB(async client => {
   if (req.isAuthenticated()) {
     return next();
   }
-  res.redirect('/confirm-authentication-login');
+  res.redirect('/');
 };
 
   passport.use(new LocalStrategy(
