@@ -50,8 +50,20 @@ myDB(async client => {
 
   app.route("/login").post(passport.authenticate('local', { failureRedirect: '/' }),
   (req, res) => {
-    res.render('/profile');
+    
+    res.redirect('/profile');
   });
+
+  app.route('/profile').get(ensureAuthenticated, (req,res) => {
+    res.render(process.cwd() + '/views/pug/profile');
+ });
+
+  function ensureAuthenticated(req, res, next) {
+  if (req.isAuthenticated()) {
+    return next();
+  }
+  res.redirect('/confirm-authentication-login');
+};
 
   passport.use(new LocalStrategy(
   function(username, password, done) {
