@@ -10,7 +10,7 @@ const session = require('express-session');
 const passport = require('passport');
 const LocalStrategy = require('passport-local');
 const bcrypt = require('bcrypt');
-const hash = bcrypt.hashSync(req.body.password, 12);
+
 
 app.set('view engine', 'pug')
 
@@ -69,6 +69,8 @@ myDB(async client => {
 
 app.route('/register')
   .post((req, res, next) => {
+    const hash = bcrypt.hashSync(req.body.password, 12);
+    
     myDataBase.findOne({ username: req.body.username }, function(err, user) {
       if (err) {
         next(err);
@@ -117,7 +119,7 @@ app.use((req, res, next) => {
       console.log('User '+ username +' attempted to log in.');
       if (err) { return done(err); }
       if (!user) { return done(null, false); }
-      if (!bcrypt.compareSync(password, user.password)) {return done(null, false);}
+      if (!bcrypt.compareSync(password, user.password)) { return done(null, false); }
       return done(null, user);
     });
   }
