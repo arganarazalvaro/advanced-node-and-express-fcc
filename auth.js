@@ -18,7 +18,7 @@ module.exports = function (app, myDataBase) {
     passport.use(new GitHubStrategy({
         clientID: process.env.GITHUB_CLIENT_ID,
         clientSecret: process.env.GITHUB_CLIENT_SECRET,
-        callbackURL: process.cwd() + "/auth/github/callback"
+        callbackURL: "https://radiant-sierra-40706.herokuapp.com//auth/github/callback"
         },
         function(accessToken, refreshToken, profile, cb) {
             console.log(profile);
