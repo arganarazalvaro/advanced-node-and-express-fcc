@@ -28,8 +28,8 @@ app.use(passport.session());
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
   console.log("Conected to DB")
-  routes(app, myDataBase)
-  auth(app, myDataBase)
+  routes(app, myDataBase);
+  auth(app, myDataBase);
 }).catch(e => {
   console.log("FAILED to conect to DB")
   app.route('/').get((req, res) => {
