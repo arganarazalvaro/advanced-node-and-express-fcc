@@ -3,6 +3,7 @@
 
   socket.on('user count', function(data) {
   console.log(data);
+  console.log('user ' + socket.request.user.name + ' connected');
   });
 
 $(document).ready(function () {

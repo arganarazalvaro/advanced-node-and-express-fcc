@@ -13,6 +13,11 @@ const passport = require('passport');
 const bcrypt = require('bcrypt');
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const passportSocketIo = require("passport.socketio");
+const cookieParser = require('cookie-parser');
+const MongoStore = require('connect-mongo')(session);
+const URI = process.env.MONGO_URI;
+const store = new MongoStore({ url: URI });
 
 
 app.set('view engine', 'pug')
@@ -27,6 +32,30 @@ app.use(session({
 app.use(passport.initialize());
 app.use(passport.session());
 
+io.use(
+  passportSocketIo.authorize({
+    cookieParser: cookieParser,
+    key: 'express.sid',
+    secret: process.env.SESSION_SECRET,
+    store: store,
+    success: onAuthorizeSuccess,
+    fail: onAuthorizeFail
+    })
+);
+
+  //Funtions onAuthorized Success and Fail
+function onAuthorizeSuccess(data, accept) {
+  console.log('successful connection to socket.io');
+  accept(null, true);
+}
+
+function onAuthorizeFail(data, message, error, accept) {
+  if (error) throw new Error(message);
+  console.log('failed connection to socket.io:', message);
+  accept(null, false);
+}
+
+//Conect to DataBase
 myDB(async client => {
   const myDataBase = await client.db('database').collection('users');
   console.log("Conected to DB")
@@ -36,11 +65,11 @@ myDB(async client => {
   io.on('connection', socket => {
     ++currentUsers;
     io.emit('user count', currentUsers);
-    console.log('A user has connected');
+    console.log('user ' + socket.request.user.username + ' connected');
     socket.on('disconnect', () => {
       --currentUsers;
       io.emit('user count', currentUsers);
-      console.log("A user desconected")
+      console.log('user ' + socket.request.user.username + ' disconnected');
 });
   });
 }).catch(e => {
@@ -55,7 +84,8 @@ http.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + process.env.PORT);
 });
 
-fccTesting(app); //For FCC testing purposes
+//For FCC testing purposes
+fccTesting(app); 
 app.use('/public', express.static(process.cwd() + '/public'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
