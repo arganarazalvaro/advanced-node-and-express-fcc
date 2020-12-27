@@ -37,6 +37,11 @@ myDB(async client => {
     ++currentUsers;
     io.emit('user count', currentUsers);
     console.log('A user has connected');
+    socket.on('disconnect', () => {
+      --currentUsers;
+      io.emit('user count', currentUsers);
+      console.log("A user desconected")
+});
   });
 }).catch(e => {
   console.log("FAILED to conect to DB")
