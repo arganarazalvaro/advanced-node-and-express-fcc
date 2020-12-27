@@ -1,9 +1,12 @@
   /*global io*/
   let socket = io();
 
-  socket.on('user count', function(data) {
-  console.log(data);
-  console.log('user ' + socket.request.user.name + ' connected');
+  socket.on('user', data => {
+    $('#num-users').text(data.currentUsers + ' users online');
+    let message =
+      data.name +
+      (data.connected ? ' has joined the chat.' : ' has left the chat.');
+    $('#messages').append($('<li>').html('<b>' + message + '</b>'));
   });
 
 $(document).ready(function () {
