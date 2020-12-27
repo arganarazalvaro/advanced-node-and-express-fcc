@@ -11,6 +11,8 @@ const app = express();
 const session = require('express-session');
 const passport = require('passport');
 const bcrypt = require('bcrypt');
+const http = require('http').createServer(app);
+const io = require('socket.io')(http);
 
 
 app.set('view engine', 'pug')
@@ -30,6 +32,9 @@ myDB(async client => {
   console.log("Conected to DB")
   routes(app, myDataBase);
   auth(app, myDataBase);
+  io.on('connection', socket => {
+    console.log('A user has connected');
+  });
 }).catch(e => {
   console.log("FAILED to conect to DB")
   app.route('/').get((req, res) => {
@@ -38,7 +43,7 @@ myDB(async client => {
 });
 
 // app.listen out here...
-app.listen(process.env.PORT || 3000, () => {
+http.listen(process.env.PORT || 3000, () => {
   console.log('Listening on port ' + process.env.PORT);
 });
 
